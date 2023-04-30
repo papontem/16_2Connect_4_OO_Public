@@ -21,12 +21,22 @@
  *  - Add a small form to the HTML that lets you enter the colors for the players, so that when you start a new game, it uses these player colors.
 
  */
+// PAM3: TODO: Player class..
+// status: doing....
+class Player{
+	constructor(x){
+		this.color = x
+	}
+}
 class Game {
-	// PAM: making constructor, renaming variables to include this
-	constructor(x, y) {
+	// PAM1: making constructor, renaming variables to include this
+	constructor(x, y, p1, p2) {
 		this.WIDTH = x;
 		this.HEIGHT = y;
-		this.currPlayer = 1;
+		// PAM3: saving possible players in an array
+		this.players = [p1, p2];
+		// PAM3: setting currplayer as the player at the start of players array
+		this.currPlayer = this.players[0];
 		this.board = [];
 	}
 	// PAM: creating the javascript board in memory
@@ -41,7 +51,7 @@ class Game {
 		// make column tops (clickable area for adding a piece to that column)
 		const top = document.createElement("tr");
 		top.setAttribute("id", "column-top");
-		//PAM: making sure that the event listeners are added with the handle click function callback's 'this' value always being the game class instance
+		//PAM1: making sure that the event listeners are added with the handle click function callback's 'this' value always being the game class instance
 		top.addEventListener("click", this.handleClick.bind(this));
 		// PAM: make the cells inside the top row
 		for (let x = 0; x < this.WIDTH; x++) {
@@ -49,7 +59,7 @@ class Game {
 			headCell.setAttribute("id", x);
 			top.append(headCell);
 		}
-		// PAM: finished top row is then placed into our html board, should be visible now
+		// PAM1: finished top row is then placed into our html board, should be visible now
 		board.append(top);
 
 		// make main part of html* board
@@ -77,9 +87,9 @@ class Game {
 	placeInTable(y, x) {
 		const piece = document.createElement("div");
 		piece.classList.add("piece");
-		piece.classList.add(`p${this.currPlayer}`);
+		piece.classList.add(`${this.currPlayer.color}`);
 		piece.style.top = -50 * (y + 2);
-
+		piece.style.backgroundColor = this.currPlayer.color;
 		const spot = document.getElementById(`${y}-${x}`);
 		spot.append(piece);
 	}
@@ -92,22 +102,22 @@ class Game {
 			// Check four cells to see if they're all color of current player
 			//  - cells: list of four (y, x) cells
 			//  - returns true if all are legal coordinates & all match currPlayer
-			// console.log('Nested _win function with "this" as:', this); //PAM : Checking the value of this
-			
+			// console.log('Nested _win function with "this" as:', this); //PAM1: Checking the value of this
+
 			return cells.every(
 				([y, x]) =>
-				y >= 0 &&
-				y < this.HEIGHT &&
-				x >= 0 &&
-				x < this.WIDTH &&
-				this.board[y][x] === this.currPlayer
+					y >= 0 &&
+					y < this.HEIGHT &&
+					x >= 0 &&
+					x < this.WIDTH &&
+					this.board[y][x] === this.currPlayer.color
 			);
 		}
-			
+
 		for (let y = 0; y < this.HEIGHT; y++) {
 			// console.log('For-loop in CFW with "this" as:', this); //PAM : Checking the value of this
 			for (let x = 0; x < this.WIDTH; x++) {
-				// console.log('Nested for-loop in CFW with "this" as:', this); //PAM : Checking the value of this
+				// console.log('Nested for-loop in CFW with "this" as:', this); //PAM1: Checking the value of this
 				// get "check list" of 4 cells (starting here) for each of the different
 				// ways to win
 				const horiz = [
@@ -124,25 +134,25 @@ class Game {
 				];
 				const diagDR = [
 					[y, x],
-						[y + 1, x + 1],
-							[y + 2, x + 2],
-								[y + 3, x + 3],
+					[y + 1, x + 1],
+					[y + 2, x + 2],
+					[y + 3, x + 3],
 				];
 				const diagDL = [
-								[y, x],
-							[y + 1, x - 1],
-						[y + 2, x - 2],
+					[y, x],
+					[y + 1, x - 1],
+					[y + 2, x - 2],
 					[y + 3, x - 3],
 				];
 
-				// PAM: cosole flags
+				// PAM1: cosole flags
 				// console.log('Currently trying to bind the game instance to then call _win');
-				
+
 				let _winHoriz = _win.call(this, horiz);
-				let _winVert  = _win.call(this,  vert);
-				let _winDR    = _win.call(this,diagDR);
-				let _winDL    = _win.call(this,diagDL);
-				
+				let _winVert = _win.call(this, vert);
+				let _winDR = _win.call(this, diagDR);
+				let _winDL = _win.call(this, diagDL);
+
 				//PAM: TESTING
 				// console.log('_winHoriz = ', _winHoriz);
 				// console.log('_winVert = ', _winVert);
@@ -150,7 +160,7 @@ class Game {
 				// console.log('_winDL = ', _winDL);
 
 				// find winner (only checking each win-possibility as needed)
-				// PAM: has been modified
+				// PAM1: has been modified
 				if (_winHoriz || _winVert || _winDR || _winDL) {
 					return true;
 				}
@@ -158,7 +168,7 @@ class Game {
 		}
 	}
 	handleClick(evt) {
-		// console.log("handle click even with this as:", this); // PAM: checking the value of 'this' making sure its the game instance
+		// console.log("handle click even with this as:", this); // PAM1: checking the value of 'this' making sure its the game instance
 		// get x from ID of clicked cell
 		const x = +evt.target.id;
 
@@ -169,54 +179,63 @@ class Game {
 		}
 
 		// place piece in board and add to HTML table
-		this.board[y][x] = this.currPlayer;
+		this.board[y][x] = this.currPlayer.color;
 		this.placeInTable(y, x);
 
 		// check for win
 		if (this.checkForWin.call(this)) {
-			return this.endGame(`Player ${this.currPlayer} won!`);
+			return this.endGame(`Player ${this.currPlayer.color} won!`);
 		}
 
 		// check for tie
 		if (this.board.every((row) => row.every((cell) => cell))) {
-			return endGame("Tie!");
+			// PAM3: forgot this, pun unintended
+			return this.endGame("Tie!");
 		}
 
 		// switch players
-		this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+		this.currPlayer =
+			this.currPlayer === this.players[0] ? this.players[1] : this.players[0];
 	}
-	
 }
 let isGameInstanceRunning = false;
 let startButton = document.getElementById("start_Button");
 let myGame;
-
+let player1;
+let player2;
 startButton.addEventListener("click", start_restart_Game);
 // console.log("Our Start Button:", startButton);
 
-// PAM: start/restart button functionality.....
+// PAM2: start/restart button functionality.....
 function start_restart_Game() {
 	if (isGameInstanceRunning == false) {
 		isGameInstanceRunning = true;
 		this.innerText = "Restart";
-		// create the game and the boards
-		myGame = new Game(6, 7); // assuming constructor takes height, width
+		//create the players, get their colors from the html form
+		let p1ColorChoice = document.getElementById("player1ColorChoice").value;
+		let p2ColorChoice = document.getElementById("player2ColorChoice").value;
+		player1 = new Player(p1ColorChoice);
+		player2 = new Player(p2ColorChoice);
+		//PAM2: create the game and the boards
+		myGame = new Game(6, 7, player1, player2); // assuming constructor takes height, width, and that players are already build
 		myGame.makeBoard();
 		myGame.makeHtmlBoard();
 
 		// console.log("My Game Instance:", myGame);
 		// console.log("My Game Intance's Board:", myGame.board);
 	} else {
-		// reset the games board
+		//PAM2: reset the games board
 		let htmlGameBoard = document.getElementById("board");
 		htmlGameBoard.innerHTML = "";
 		myGame = undefined;
+		player1 = undefined;
+		player2 = undefined;
 		isGameInstanceRunning = false;
 		this.innerText = "Start The Game";
 	}
 }
 
-// PAM: Everything bellow this was provided code:
+// PAM1: Everything bellow this was provided code:
 
 // const WIDTH = 7;
 // const HEIGHT = 6;

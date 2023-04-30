@@ -1,9 +1,27 @@
+header {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+header form input {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	width: 13em;
+}
 /* game board table */
 
+#game {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 #board td {
-	width: 50px;
-	height: 50px;
-	border: solid 1px #666;
+	width: 48px;
+	height: 48px;
+	border: double 2px #666;
 }
 
 /* pieces are div within game table cells: draw as colored circles */
@@ -14,19 +32,23 @@
 	height: 80%;
 	border-radius: 50%;
 }
-
-.piece.p1 {
+/* PAM: TEMP: TODO: setting players colors from the form */
+.piece {
+	background-color: #666;
+	outline: 1px red solid;
+}
+/* .piece.p1 {
 	background-color: red;
 }
 
 .piece.p2 {
 	background-color: blue;
-}
+} */
 
 /* column-top is table row of clickable areas for each column */
 
 #column-top td {
-	border: dashed 1px lightgray;
+	border: dashed 2px lightgray;
 }
 
 #column-top td:hover {
