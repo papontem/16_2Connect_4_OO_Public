@@ -11,7 +11,15 @@
  *
  * PAM: PART 2 Making of a "Start" button
  * 'it should only start the game when this is clicked, and you should be able to click this to restart a new game.'
- * status: doing....
+ * status: doing...., done so far... its working... moving to part 3
+ *
+ * PAM: PART 3 Make Player a Class,
+ *  - each instance has a string color name (eg, “orange” or “#F08000”)
+ *  - The Game should keep track of the current player object, not the current player number.
+ *  - Update the code so that the player pieces are the right color for them, rather than being hardcoded in CSS as red or blue.
+ *  - Add a small form to the HTML that lets you enter the colors for the players, so that when you start a new game, it uses these player colors.
+ *  - Add a small form to the HTML that lets you enter the colors for the players, so that when you start a new game, it uses these player colors.
+
  */
 class Game {
 	// PAM: making constructor, renaming variables to include this
@@ -78,15 +86,13 @@ class Game {
 	endGame(msg) {
 		alert(msg);
 	}
-	// PAM: TODO: properly binding the value of 'this' within function _win
-	// PAM: DONE...
 	checkForWin() {
-		console.log('TOP CheckForWin (CFW) with "this" as:', this); //PAM : Checking the value of this
+		// console.log('TOP CheckForWin (CFW) with "this" as:', this); //PAM : Checking the value of this
 		function _win(cells) {
 			// Check four cells to see if they're all color of current player
 			//  - cells: list of four (y, x) cells
 			//  - returns true if all are legal coordinates & all match currPlayer
-			console.log('Nested _win function with "this" as:', this); //PAM : Checking the value of this
+			// console.log('Nested _win function with "this" as:', this); //PAM : Checking the value of this
 			
 			return cells.every(
 				([y, x]) =>
@@ -99,9 +105,9 @@ class Game {
 		}
 			
 		for (let y = 0; y < this.HEIGHT; y++) {
-			console.log('For-loop in CFW with "this" as:', this); //PAM : Checking the value of this
+			// console.log('For-loop in CFW with "this" as:', this); //PAM : Checking the value of this
 			for (let x = 0; x < this.WIDTH; x++) {
-				console.log('Nested for-loop in CFW with "this" as:', this); //PAM : Checking the value of this
+				// console.log('Nested for-loop in CFW with "this" as:', this); //PAM : Checking the value of this
 				// get "check list" of 4 cells (starting here) for each of the different
 				// ways to win
 				const horiz = [
@@ -130,7 +136,7 @@ class Game {
 				];
 
 				// PAM: cosole flags
-				console.log('Currently trying to bind the game instance to then call _win');
+				// console.log('Currently trying to bind the game instance to then call _win');
 				
 				let _winHoriz = _win.call(this, horiz);
 				let _winVert  = _win.call(this,  vert);
@@ -138,10 +144,10 @@ class Game {
 				let _winDL    = _win.call(this,diagDL);
 				
 				//PAM: TESTING
-				// console.log('_win.call(this, horiz) = ', _winHoriz);
-				// console.log('_win.call(this,  vert) = ', _winVert);
-				// console.log('_win.call(this,diagDR) = ', _winDR);
-				// console.log('_win.call(this,diagDL) = ', _winDL);
+				// console.log('_winHoriz = ', _winHoriz);
+				// console.log('_winVert = ', _winVert);
+				// console.log('_winDR = ', _winDR);
+				// console.log('_winDL = ', _winDL);
 
 				// find winner (only checking each win-possibility as needed)
 				// PAM: has been modified
@@ -152,7 +158,7 @@ class Game {
 		}
 	}
 	handleClick(evt) {
-		console.log("handle click even with this as:", this); // PAM: checking the value of 'this' making sure its the game instance
+		// console.log("handle click even with this as:", this); // PAM: checking the value of 'this' making sure its the game instance
 		// get x from ID of clicked cell
 		const x = +evt.target.id;
 
@@ -167,8 +173,6 @@ class Game {
 		this.placeInTable(y, x);
 
 		// check for win
-		// PAM: TODO: resolve TypeError: this.checkForWin() is undefined
-		// PAM: done... was using bind instead of call, changed checkForWin() to checkForWin
 		if (this.checkForWin.call(this)) {
 			return this.endGame(`Player ${this.currPlayer} won!`);
 		}
@@ -183,12 +187,36 @@ class Game {
 	}
 	
 }
+let isGameInstanceRunning = false;
+let startButton = document.getElementById("start_Button");
+let myGame;
 
-let myGame = new Game(6, 7); // assuming constructor takes height, width
-console.log(myGame);
-console.log(myGame.makeBoard());
-console.log(myGame.board);
-console.log(myGame.makeHtmlBoard());
+startButton.addEventListener("click", start_restart_Game);
+// console.log("Our Start Button:", startButton);
+
+// PAM: start/restart button functionality.....
+function start_restart_Game() {
+	if (isGameInstanceRunning == false) {
+		isGameInstanceRunning = true;
+		this.innerText = "Restart";
+		// create the game and the boards
+		myGame = new Game(6, 7); // assuming constructor takes height, width
+		myGame.makeBoard();
+		myGame.makeHtmlBoard();
+
+		// console.log("My Game Instance:", myGame);
+		// console.log("My Game Intance's Board:", myGame.board);
+	} else {
+		// reset the games board
+		let htmlGameBoard = document.getElementById("board");
+		htmlGameBoard.innerHTML = "";
+		myGame = undefined;
+		isGameInstanceRunning = false;
+		this.innerText = "Start The Game";
+	}
+}
+
+// PAM: Everything bellow this was provided code:
 
 // const WIDTH = 7;
 // const HEIGHT = 6;
