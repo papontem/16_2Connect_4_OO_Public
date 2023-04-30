@@ -7,6 +7,11 @@
  */
 /**
  * PAM: PART 1 Taking all game functionality into a single game class
+ * status: doing ...., done, game runs as first version with all functionality now contained with in a class, moving to part 2
+ *
+ * PAM: PART 2 Making of a "Start" button
+ * 'it should only start the game when this is clicked, and you should be able to click this to restart a new game.'
+ * status: doing....
  */
 class Game {
 	// PAM: making constructor, renaming variables to include this
@@ -73,53 +78,30 @@ class Game {
 	endGame(msg) {
 		alert(msg);
 	}
-	handleClick(evt) {
-		console.log("handle click even with this as:", this); // PAM: checking the value of 'this' making sure its the game instance
-		// get x from ID of clicked cell
-		const x = +evt.target.id;
-
-		// get next spot in column (if none, ignore click)
-		const y = this.findSpotForCol(x);
-		if (y === null) {
-			return;
-		}
-
-		// place piece in board and add to HTML table
-		this.board[y][x] = this.currPlayer;
-		this.placeInTable(y, x);
-
-		// check for win
-		if (this.checkForWin().bind(this)) {
-			return endGame(`Player ${this.currPlayer} won!`);
-		}
-
-		// check for tie
-		if (this.board.every((row) => row.every((cell) => cell))) {
-			return endGame("Tie!");
-		}
-
-		// switch players
-		this.currPlayer = this.currPlayer === 1 ? 2 : 1;
-	}
+	// PAM: TODO: properly binding the value of 'this' within function _win
+	// PAM: DONE...
 	checkForWin() {
-		console.log('check for win with this as:', this); //PAM : Checking the value of this
+		console.log('TOP CheckForWin (CFW) with "this" as:', this); //PAM : Checking the value of this
 		function _win(cells) {
 			// Check four cells to see if they're all color of current player
 			//  - cells: list of four (y, x) cells
 			//  - returns true if all are legal coordinates & all match currPlayer
-
+			console.log('Nested _win function with "this" as:', this); //PAM : Checking the value of this
+			
 			return cells.every(
 				([y, x]) =>
-					y >= 0 &&
-					y < this.HEIGHT &&
-					x >= 0 &&
-					x < this.WIDTH &&
-					this.board[y][x] === this.currPlayer
+				y >= 0 &&
+				y < this.HEIGHT &&
+				x >= 0 &&
+				x < this.WIDTH &&
+				this.board[y][x] === this.currPlayer
 			);
 		}
-
+			
 		for (let y = 0; y < this.HEIGHT; y++) {
+			console.log('For-loop in CFW with "this" as:', this); //PAM : Checking the value of this
 			for (let x = 0; x < this.WIDTH; x++) {
+				console.log('Nested for-loop in CFW with "this" as:', this); //PAM : Checking the value of this
 				// get "check list" of 4 cells (starting here) for each of the different
 				// ways to win
 				const horiz = [
@@ -147,13 +129,59 @@ class Game {
 					[y + 3, x - 3],
 				];
 
+				// PAM: cosole flags
+				console.log('Currently trying to bind the game instance to then call _win');
+				
+				let _winHoriz = _win.call(this, horiz);
+				let _winVert  = _win.call(this,  vert);
+				let _winDR    = _win.call(this,diagDR);
+				let _winDL    = _win.call(this,diagDL);
+				
+				//PAM: TESTING
+				// console.log('_win.call(this, horiz) = ', _winHoriz);
+				// console.log('_win.call(this,  vert) = ', _winVert);
+				// console.log('_win.call(this,diagDR) = ', _winDR);
+				// console.log('_win.call(this,diagDL) = ', _winDL);
+
 				// find winner (only checking each win-possibility as needed)
-				if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+				// PAM: has been modified
+				if (_winHoriz || _winVert || _winDR || _winDL) {
 					return true;
 				}
 			}
 		}
 	}
+	handleClick(evt) {
+		console.log("handle click even with this as:", this); // PAM: checking the value of 'this' making sure its the game instance
+		// get x from ID of clicked cell
+		const x = +evt.target.id;
+
+		// get next spot in column (if none, ignore click)
+		const y = this.findSpotForCol(x);
+		if (y === null) {
+			return;
+		}
+
+		// place piece in board and add to HTML table
+		this.board[y][x] = this.currPlayer;
+		this.placeInTable(y, x);
+
+		// check for win
+		// PAM: TODO: resolve TypeError: this.checkForWin() is undefined
+		// PAM: done... was using bind instead of call, changed checkForWin() to checkForWin
+		if (this.checkForWin.call(this)) {
+			return this.endGame(`Player ${this.currPlayer} won!`);
+		}
+
+		// check for tie
+		if (this.board.every((row) => row.every((cell) => cell))) {
+			return endGame("Tie!");
+		}
+
+		// switch players
+		this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+	}
+	
 }
 
 let myGame = new Game(6, 7); // assuming constructor takes height, width
