@@ -22,7 +22,7 @@
 
  */
 // PAM3: TODO: Player class..
-// status: doing....
+// status: doing.... DONE
 class Player{
 	constructor(x){
 		this.color = x
@@ -30,11 +30,11 @@ class Player{
 }
 class Game {
 	// PAM1: making constructor, renaming variables to include this
-	constructor(x, y, p1, p2) {
+	constructor(x, y, ...players) {
 		this.WIDTH = x;
 		this.HEIGHT = y;
 		// PAM3: saving possible players in an array
-		this.players = [p1, p2];
+		this.players = players;
 		// PAM3: setting currplayer as the player at the start of players array
 		this.currPlayer = this.players[0];
 		this.board = [];
@@ -113,7 +113,7 @@ class Game {
 					this.board[y][x] === this.currPlayer.color
 			);
 		}
-
+		// PAM: TODO: for of.. will be faster?
 		for (let y = 0; y < this.HEIGHT; y++) {
 			// console.log('For-loop in CFW with "this" as:', this); //PAM : Checking the value of this
 			for (let x = 0; x < this.WIDTH; x++) {
@@ -198,22 +198,42 @@ class Game {
 			this.currPlayer === this.players[0] ? this.players[1] : this.players[0];
 	}
 }
-let isGameInstanceRunning = false;
-let startButton = document.getElementById("start_Button");
+//PAM3: setup for initializing the game
 let myGame;
 let player1;
 let player2;
-startButton.addEventListener("click", start_restart_Game);
+
+let isGameInstanceRunning = false;
+let colorH2 = document.getElementsByTagName("h2")[1];
+let player1Label = document.querySelector("label[for=player1ColorChoice]");
+let player2Label = document.querySelector("label[for=player2ColorChoice]");
+let player1Input = document.getElementById("player1ColorChoice");
+let player2Input = document.getElementById("player2ColorChoice");
+
+let startButton = document.getElementById("startButton");
+let howToPlay = [
+	document.getElementsByTagName("h2")[0],
+	document.getElementsByTagName("ul")[0],
+];
+// console.log("how to:", howToPlay);
+
 // console.log("Our Start Button:", startButton);
 
 // PAM2: start/restart button functionality.....
-function start_restart_Game() {
+//PAM: TODO: turn into arrow func
+start_restart_Game = () => {
+	// console.log("this = ", this);
 	if (isGameInstanceRunning == false) {
+		howToPlay[0].innerHTML = "";
+		howToPlay[1].innerHTML = "";
 		isGameInstanceRunning = true;
-		this.innerText = "Restart";
+		startButton.innerText = "Restart Game/Reselect Colors";
 		//create the players, get their colors from the html form
-		let p1ColorChoice = document.getElementById("player1ColorChoice").value;
-		let p2ColorChoice = document.getElementById("player2ColorChoice").value;
+		colorH2.innerText = "";
+		player1Label.innerText = "Player 1 picked...";
+		player2Label.innerText = "Player 2 picked...";
+		let p1ColorChoice = player1Input.value;
+		let p2ColorChoice = player2Input.value;
 		player1 = new Player(p1ColorChoice);
 		player2 = new Player(p2ColorChoice);
 		//PAM2: create the game and the boards
@@ -230,174 +250,13 @@ function start_restart_Game() {
 		myGame = undefined;
 		player1 = undefined;
 		player2 = undefined;
+		colorH2.innerText = "Choose Your Color of Preference";
+		player1Label.innerText = "Player 1: ex: name a color or hex value: #FF0000";
+		player2Label.innerText = "Player 2: ex: name a color or hex value: #0000FF";
+		// player1Input.value = 'red'
+		// player2Input.value = 'blue'
 		isGameInstanceRunning = false;
-		this.innerText = "Start The Game";
+		startButton.innerText = "Start The Game";
 	}
-}
-
-// PAM1: Everything bellow this was provided code:
-
-// const WIDTH = 7;
-// const HEIGHT = 6;
-
-// let currPlayer = 1; // active player: 1 or 2
-// let board = []; // array of rows, each row is array of cells  (board[y][x])
-
-/** makeBoard: create in-JS board structure:
- *   board = array of rows, each row is array of cells  (board[y][x])
- */
-
-// function makeBoard() {
-// 	for (let y = 0; y < HEIGHT; y++) {
-// 		board.push(Array.from({ length: WIDTH }));
-// 	};
-// };
-
-/** makeHtmlBoard: make HTML table and row of column tops. */
-
-// function makeHtmlBoard() {
-// 	const board = document.getElementById("board");
-
-// 	// make column tops (clickable area for adding a piece to that column)
-// 	const top = document.createElement("tr");
-// 	top.setAttribute("id", "column-top");
-// 	top.addEventListener("click", handleClick);
-
-// 	for (let x = 0; x < WIDTH; x++) {
-// 		const headCell = document.createElement("td");
-// 		headCell.setAttribute("id", x);
-// 		top.append(headCell);
-// 	}
-
-// 	board.append(top);
-
-// 	// make main part of board
-// 	for (let y = 0; y < HEIGHT; y++) {
-// 		const row = document.createElement("tr");
-
-// 		for (let x = 0; x < WIDTH; x++) {
-// 			const cell = document.createElement("td");
-// 			cell.setAttribute("id", `${y}-${x}`);
-// 			row.append(cell);
-// 		}
-
-// 		board.append(row);
-// 	}
-// }
-
-/** findSpotForCol: given column x, return top empty y (null if filled) */
-
-// function findSpotForCol(x) {
-// 	for (let y = HEIGHT - 1; y >= 0; y--) {
-// 		if (!board[y][x]) {
-// 			return y;
-// 		}
-// 	}
-// 	return null;
-// }
-
-/** placeInTable: update DOM to place piece into HTML table of board */
-
-// function placeInTable(y, x) {
-// 	const piece = document.createElement("div");
-// 	piece.classList.add("piece");
-// 	piece.classList.add(`p${currPlayer}`);
-// 	piece.style.top = -50 * (y + 2);
-
-// 	const spot = document.getElementById(`${y}-${x}`);
-// 	spot.append(piece);
-// }
-
-/** endGame: announce game end */
-
-// function endGame(msg) {
-// 	alert(msg);
-// }
-
-/** handleClick: handle click of column top to play piece */
-
-// function handleClick(evt) {
-// 	// get x from ID of clicked cell
-// 	const x = +evt.target.id;
-
-// 	// get next spot in column (if none, ignore click)
-// 	const y = findSpotForCol(x);
-// 	if (y === null) {
-// 		return;
-// 	}
-
-// 	// place piece in board and add to HTML table
-// 	board[y][x] = currPlayer;
-// 	placeInTable(y, x);
-
-// 	// check for win
-// 	if (checkForWin()) {
-// 		return endGame(`Player ${currPlayer} won!`);
-// 	}
-
-// 	// check for tie
-// 	if (board.every((row) => row.every((cell) => cell))) {
-// 		return endGame("Tie!");
-// 	}
-
-// 	// switch players
-// 	currPlayer = currPlayer === 1 ? 2 : 1;
-// }
-
-/** checkForWin: check board cell-by-cell for "does a win start here?" */
-
-// function checkForWin() {
-// 	function _win(cells) {
-// 		// Check four cells to see if they're all color of current player
-// 		//  - cells: list of four (y, x) cells
-// 		//  - returns true if all are legal coordinates & all match currPlayer
-
-// 		return cells.every(
-// 			([y, x]) =>
-// 				y >= 0 &&
-// 				y < HEIGHT &&
-// 				x >= 0 &&
-// 				x < WIDTH &&
-// 				board[y][x] === currPlayer
-// 		);
-// 	}
-
-// 	for (let y = 0; y < HEIGHT; y++) {
-// 		for (let x = 0; x < WIDTH; x++) {
-// 			// get "check list" of 4 cells (starting here) for each of the different
-// 			// ways to win
-// 			const horiz = [
-// 				[y, x],
-// 				[y, x + 1],
-// 				[y, x + 2],
-// 				[y, x + 3],
-// 			];
-// 			const vert = [
-// 				[y, x],
-// 				[y + 1, x],
-// 				[y + 2, x],
-// 				[y + 3, x],
-// 			];
-// 			const diagDR = [
-// 				[y, x],
-// 				[y + 1, x + 1],
-// 				[y + 2, x + 2],
-// 				[y + 3, x + 3],
-// 			];
-// 			const diagDL = [
-// 				[y, x],
-// 				[y + 1, x - 1],
-// 				[y + 2, x - 2],
-// 				[y + 3, x - 3],
-// 			];
-
-// 			// find winner (only checking each win-possibility as needed)
-// 			if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
-// 				return true;
-// 			}
-// 		}
-// 	}
-// }
-
-// makeBoard();
-// makeHtmlBoard();
+};
+startButton.addEventListener("click", start_restart_Game);
