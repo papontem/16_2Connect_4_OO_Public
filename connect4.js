@@ -274,7 +274,7 @@ start_restart_Game = () => {
 		player1 = undefined;
 		player2 = undefined;
 		colorH2.innerHTML =
-			"<h3>Choose Your Color of Preference</h3><br><p><a href='https://w3schools.sinsixx.com/css/css_colorsfull.asp.htm'>https://w3schools.sinsixx.com/css/css_colorsfull.asp.htm</a></p>";
+			"<h3>Choose Your Color of Preference: </h3><br><p><a href='https://w3schools.sinsixx.com/css/css_colorsfull.asp.htm'>https://w3schools.sinsixx.com/css/css_colorsfull.asp.htm</a></p>";
 
 		player1Label.innerText = "Player 1: ex: name a color or hex value: #FF0000";
 		player2Label.innerText = "Player 2: ex: name a color or hex value: #0000FF";
