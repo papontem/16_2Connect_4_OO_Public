@@ -4,7 +4,7 @@ This is a public repo of the Object Oriented version of the Connect 4 project fr
 
 ## How To Play
 
-    - Pick your colors, then click on the start button.
+    - Pick your colors, then click on the start button. colors can be any valid css color value, be it by name, hex code or rgb(0,0,0) etc. Heres a list: https://w3schools.sinsixx.com/css/css_colorsfull.asp.htm
     - Default is red for player 1 and blue for player 2.
     - A board will appear with 6x7 grid of 50x50 pixel squares.
     - At the top of the board are boxes with dashed outlines, a target when you hover over them and its where you can drop a piece down a column by clicking them.
