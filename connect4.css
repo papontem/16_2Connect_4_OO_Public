@@ -39,14 +39,18 @@ body header {
 	background-color: bisque;
 }
 body header div.top h1 {
+	margin: 0px;
+	padding: 0px;
 	display: flex;
 	justify-content: center;
-	align-items: end;
+	align-items: center;
 }
-body header div.top h2 {
+h3 {
+	margin: 0px;
+	padding: 0px;
 	display: flex;
 	justify-content: center;
-	align-items: end;
+	align-items: center;
 }
 body header div.top {
 	text-align: left;
@@ -59,7 +63,10 @@ body header form {
 	align-items: center;
 	margin: 10px;
 	padding: 10px;
+	margin-top: 0px;
+	padding-top: 0px;
 }
+
 body header form input {
 	width: 13em;
 	margin: 5px;
@@ -79,7 +86,7 @@ body header form input {
 #startButton:hover,
 #starButtun:focus {
 	background-position: right;
-	outline: 2px black solid;
+	outline: 10px black solid;
 }
 
 /* game board table */

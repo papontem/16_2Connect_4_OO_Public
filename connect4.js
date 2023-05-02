@@ -6,10 +6,10 @@
  * board fills (tie)
  */
 /**
- * PAM: PART 1 Taking all game functionality into a single game class
+ * PAM1: PART 1 Taking all game functionality into a single game class
  * status: doing ...., done, game runs as first version with all functionality now contained with in a class, moving to part 2
  *
- * PAM: PART 2 Making of a "Start" button
+ * PAM2: PART 2 Making of a "Start" button
  * 'it should only start the game when this is clicked, and you should be able to click this to restart a new game.'
  * status: doing...., done so far... its working... moving to part 3
  *
@@ -18,32 +18,41 @@
  *  - The Game should keep track of the current player object, not the current player number.
  *  - Update the code so that the player pieces are the right color for them, rather than being hardcoded in CSS as red or blue.
  *  - Add a small form to the HTML that lets you enter the colors for the players, so that when you start a new game, it uses these player colors.
- *  - Add a small form to the HTML that lets you enter the colors for the players, so that when you start a new game, it uses these player colors.
-
  */
 // PAM3: TODO: Player class..
 // status: doing.... DONE
+/**
+ * Player Class, create a player intance with a value of the color picked from html form.
+ * TODO: validate color choice
+ * - we expect it to be either a valid css color name or a hex code
+ */
 class Player{
 	constructor(x){
 		this.color = x
 	}
 }
+/**
+ * Game Class, create a game instance with the sizes of the default conect 4 board game, and an array of players being added.
+ * - we expect x and y to be integers
+ * - we expect the rest of the arguments to be player objects
+ */
 class Game {
 	// PAM1: making constructor, renaming variables to include this
 	constructor(x, y, ...players) {
+		//PAM: grid sizes of the connect four game
 		this.WIDTH = x;
 		this.HEIGHT = y;
 		// PAM3: saving possible players in an array
 		this.players = players;
 		// PAM3: setting currplayer as the player at the start of players array
 		this.currPlayer = this.players[0];
-		this.board = [];
+		this.board;
 	}
 	// PAM: creating the javascript board in memory
 	makeBoard() {
-		for (let y = 0; y < this.HEIGHT; y++) {
-			this.board.push(Array.from({ length: this.WIDTH }));
-		}
+		this.board = Array.from({ length: this.HEIGHT }, () =>
+			Array.from({ length: this.WIDTH })
+		);
 	}
 	makeHtmlBoard() {
 		const board = document.getElementById("board");
@@ -61,20 +70,32 @@ class Game {
 		}
 		// PAM1: finished top row is then placed into our html board, should be visible now
 		board.append(top);
+		console.log("top =", top);
 
 		// make main part of html* board
-
 		for (let y = 0; y < this.HEIGHT; y++) {
 			const row = document.createElement("tr");
-
 			for (let x = 0; x < this.WIDTH; x++) {
 				const cell = document.createElement("td");
 				cell.setAttribute("id", `${y}-${x}`);
 				row.append(cell);
 			}
-
 			board.append(row);
 		}
+	}
+	removeTopRowEventListener() {
+		console.log("removing event listenerfrom top row...");
+		let topRow = document.querySelector("#column-top");
+		// console.log("topRow= ", topRow);
+		// console.log("this=", this);
+		// console.log("this.handleClick :", this.handleClick);
+		// console.log("handleClick :", handleClick); // undefined, as i wouldve guessed
+		// topRow.removeEventListener("click", handleClick);// undefined
+		// console.log("topRow.onclick = ", topRow.onclick); // returns null
+		// topRow.removeEventListener("click", this.handleClick); // Still couldnt remove the event listener....
+		topRow.remove(); // decided to just remove the element entirely... ey it works
+		// console.log("topRow= ", topRow);
+		topRow = undefined;
 	}
 	findSpotForCol(x) {
 		for (let y = this.HEIGHT - 1; y >= 0; y--) {
@@ -184,11 +205,13 @@ class Game {
 
 		// check for win
 		if (this.checkForWin.call(this)) {
+			this.removeTopRowEventListener();
 			return this.endGame(`Player ${this.currPlayer.color} won!`);
 		}
 
 		// check for tie
 		if (this.board.every((row) => row.every((cell) => cell))) {
+			this.removeTopRowEventListener();
 			// PAM3: forgot this, pun unintended
 			return this.endGame("Tie!");
 		}
@@ -204,7 +227,7 @@ let player1;
 let player2;
 
 let isGameInstanceRunning = false;
-let colorH2 = document.getElementsByTagName("h2")[1];
+let colorH2 = document.getElementsByTagName("h3")[1];
 let player1Label = document.querySelector("label[for=player1ColorChoice]");
 let player2Label = document.querySelector("label[for=player2ColorChoice]");
 let player1Input = document.getElementById("player1ColorChoice");
@@ -212,7 +235,7 @@ let player2Input = document.getElementById("player2ColorChoice");
 
 let startButton = document.getElementById("startButton");
 let howToPlay = [
-	document.getElementsByTagName("h2")[0],
+	document.getElementsByTagName("h3")[0],
 	document.getElementsByTagName("ul")[0],
 ];
 // console.log("how to:", howToPlay);
@@ -250,7 +273,9 @@ start_restart_Game = () => {
 		myGame = undefined;
 		player1 = undefined;
 		player2 = undefined;
-		colorH2.innerText = "Choose Your Color of Preference";
+		colorH2.innerHTML =
+			"<h3>Choose Your Color of Preference</h3><br><p><a href='https://w3schools.sinsixx.com/css/css_colorsfull.asp.htm'>https://w3schools.sinsixx.com/css/css_colorsfull.asp.htm</a></p>";
+
 		player1Label.innerText = "Player 1: ex: name a color or hex value: #FF0000";
 		player2Label.innerText = "Player 2: ex: name a color or hex value: #0000FF";
 		// player1Input.value = 'red'

@@ -15,5 +15,5 @@ This is a public repo of the Object Oriented version of the Connect 4 project fr
 ## ToDo:
 
     - Make it so that you can have more than two players
-    - The look-and-feel is very sparse: add animations, better graphics for the board or pieces, and other CSS ideas. You could even use bootstrap for things like modals for the start-new-game form.
+    - Style it Up: add animations, better graphics for the board or pieces, and other CSS ideas. Could even use bootstrap for things like modals for the start-new-game form.
     - Make a very simple computer player: it could pick a random column and place a piece there. a ComputerPlayer class?
